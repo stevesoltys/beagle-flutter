@@ -55,5 +55,5 @@ android {
 }
 
 dependencies {
-    implementation "com.github.fast-development.android-js-runtimes:fastdev-jsruntimes-jsc:0.1.4"
+    implementation "com.github.fast-development.android-js-runtimes:fastdev-jsruntimes-jsc:0.1.9"
 }
