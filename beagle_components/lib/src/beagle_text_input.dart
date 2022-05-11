@@ -122,7 +122,8 @@ class _BeagleTextInput extends State<BeagleTextInput> {
 
   @override
   Widget build(BuildContext context) {
-    final shouldExpandFlex = widget.style?.size?.height?.value != null;
+    final shouldExpandFlex = widget.style?.size?.height?.value != null
+        && widget.type != BeagleTextInputType.PASSWORD;
 
     if (_controller != null &&
         widget.value != null &&
