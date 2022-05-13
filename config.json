@@ -49,8 +49,8 @@
     ".gitkeep",
     ".sed",
     "**/Podfile.lock",
-    "**/AndroidManifest.xml",
-    "Gemfile.lock"
+    "Gemfile.lock",
+    "**/AndroidManifest.xml"
   ],
   "startDateLicense": 2020
 }

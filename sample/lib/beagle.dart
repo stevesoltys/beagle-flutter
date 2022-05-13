@@ -54,4 +54,5 @@ final beagleService = BeagleService(
   operations: myCustomOperations,
   analyticsProvider: AppAnalyticsProvider(),
   logger: DefaultLogger(),
+  enableStyles: false
 );

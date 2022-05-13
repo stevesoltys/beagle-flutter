@@ -25,14 +25,21 @@ class TemplateManagerItem {
   String? condition;
   BeagleUIElement view;
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         _jsonBeagleCase: condition,
         _jsonBeagleView: view.properties,
       };
 
   factory TemplateManagerItem.fromJson(Map<String, dynamic> json) {
+    var condition = json[_jsonBeagleCase]?.toString();
+
+    if (condition != null) {
+      condition = "@{$condition}";
+    }
+
     return TemplateManagerItem(
-      condition: json[_jsonBeagleCase],
+      condition: condition,
       view: BeagleUIElement(json[_jsonBeagleView]),
     );
   }
@@ -54,7 +61,8 @@ class TemplateManager {
   BeagleUIElement? defaultTemplate;
   List<TemplateManagerItem>? templates;
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         'default': defaultTemplate?.properties,
         'templates': templates?.map((t) => t.toJson()).toList() ?? [],
       };

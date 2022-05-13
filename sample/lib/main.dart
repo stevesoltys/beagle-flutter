@@ -18,6 +18,7 @@ import 'package:beagle/beagle.dart';
 import 'package:beagle_components/beagle_components.dart';
 import 'package:flutter/material.dart';
 import 'package:sample/beagle.dart';
+import 'package:sample/samples.dart';
 
 import 'app_theme.dart';
 
@@ -49,8 +50,8 @@ class BeagleSampleApp extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: ElevatedButton(
-          // onPressed: () => openBeagleScreen(route: LocalView(textInput), context: context),
-          onPressed: () => openBeagleScreen(route: RemoteView('/components'), context: context),
+          onPressed: () => openBeagleScreen(route: LocalView(sizedListView), context: context),
+          // onPressed: () => openBeagleScreen(route: RemoteView('/components'), context: context),
           child: Text('Start beagle flow'),
         ),
       ),

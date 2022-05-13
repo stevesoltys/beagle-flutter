@@ -59,7 +59,7 @@ class BeagleWidgetState extends State<BeagleWidget> with BeagleConsumer {
       final componentToNodeData = <String, BeagleNodeData>{};
       final widgetTree = _buildViewFromTree(tree, componentToNodeData);
       final flutterTree = BeagleRootNode(child: widgetTree, componentToNodeData: componentToNodeData);
-      setState(() => _widgetState = BeagleFlexWidget([flutterTree]));
+      setState(() => _widgetState = flutterTree);
     }
   }
 

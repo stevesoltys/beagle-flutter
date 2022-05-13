@@ -23,8 +23,8 @@ environment:
   flutter: ">=2.0.0"
 
 dependencies:
-  beagle:
-    path: ../beagle
+#  beagle:
+#    path: ../beagle
   beagle_components:
     path: ../beagle_components
   flutter:
