@@ -15,7 +15,7 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 
 // TODO: THE UNIT TESTS WILL BE WRITTEN AFTER RESOLVING THE DEPENDENCY INJECTION
