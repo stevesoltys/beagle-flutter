@@ -217,7 +217,20 @@ class StackNavigator extends StatelessWidget {
 
     void complete() {
       if (completed) return;
-      final Route<dynamic> materialRoute = _buildRoute(beagleViewWidget.widget, routeId);
+
+      final widget = beagleViewWidget.widget;
+
+      final materialRoute = MaterialPageRoute(
+        builder: (context) => screenBuilder(widget, context),
+        settings: RouteSettings(name: routeId),
+      );
+
+      widget.transitionDelay = materialRoute.transitionDuration.inMilliseconds;
+
+      Future.delayed(Duration(milliseconds: materialRoute.transitionDuration.inMilliseconds), () async {
+        beagleViewWidget.widget.transitionDelay = 0;
+      });
+
       _thisNavigatorKey.currentState!.push(materialRoute);
 
       _addHistory(routeId, beagleViewWidget.view);

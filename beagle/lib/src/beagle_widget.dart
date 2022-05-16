@@ -25,6 +25,8 @@ class BeagleWidget extends StatefulWidget {
 
   final BeagleView view;
 
+  int transitionDelay = 0;
+
   @override
   BeagleWidgetState createState() => BeagleWidgetState();
 }
@@ -81,7 +83,15 @@ class BeagleWidgetState extends State<BeagleWidget> with BeagleConsumer {
     });
 
     // update the UI everytime the beagle view changes
-    widget.view.onChange(_updateCurrentUI);
+    widget.view.onChange((tree) {
+      if (widget.transitionDelay > 0) {
+        Future.delayed(Duration(milliseconds: widget.transitionDelay), () async {
+          _updateCurrentUI(tree);
+        });
+      } else {
+        _updateCurrentUI(tree);
+      }
+    });
 
     // first render:
     final tree = widget.view.getTree();
@@ -92,6 +102,6 @@ class BeagleWidgetState extends State<BeagleWidget> with BeagleConsumer {
 
   @override
   Widget buildBeagleWidget(BuildContext context) {
-    return _widgetState ?? const SizedBox.shrink();
+    return _widgetState ?? CupertinoPageScaffold(child: Container());
   }
 }
