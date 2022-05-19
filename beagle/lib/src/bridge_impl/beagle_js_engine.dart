@@ -66,14 +66,14 @@ class BeagleJSEngine {
   RemoveListener onViewUpdate(String viewId, ViewChangeListener listener) =>
       _handleRemovableListener<ViewChangeListener>(viewId, _viewUpdateHandler.listenersMap, listener);
 
-  void evaluateOnJSRuntime(String promiseId, String? result) => _jsRuntime.evaluate(
-      "${_jsHelpers.globalBeagle}.promise.resolve('$promiseId'${result != null ? ", ${jsonEncode(result)}" : ""})");
+  // void evaluateOnJSRuntime(String promiseId, String? result) => _jsRuntime.evaluate(
+  //     "${_jsHelpers.globalBeagle}.promise.resolve('$promiseId'${result != null ? ", ${jsonEncode(result)}" : ""})");
 
   void respondHttpRequest(String id, Response? response) =>
-      _jsRuntime.evaluate('${_jsHelpers.globalBeagle}.httpClient.respond($id, ${response?.toJson()})');
+      _jsRuntime.evaluateAsync('${_jsHelpers.globalBeagle}.httpClient.respond($id, ${response?.toJson()})');
 
   /// Creates a new BeagleView and returns the created view id.
-  String createBeagleView() => _jsRuntime.evaluate('${_jsHelpers.globalBeagle}.createBeagleView()')?.stringResult ?? '';
+  Future<String> createBeagleView() async => (await _jsRuntime.evaluateAsync('${_jsHelpers.globalBeagle}.createBeagleView()'))?.stringResult ?? '';
 
   bool hasHandlerAwaitingForThisView(String viewId) => _awaitingListenerMap.containsKey(viewId);
 
@@ -85,16 +85,16 @@ class BeagleJSEngine {
 
   /// Handles a javascript promise.
   /// It throws [BeagleJSEngineException] if [BeagleJSEngine] isn't started.
-  Future<JsEvalResult> promiseToFuture(JsEvalResult? result) {
-    _checkEngineIsStarted();
-    return _jsRuntime.handlePromise(result ?? JsEvalResult("null", null));
-  }
+  // Future<JsEvalResult> promiseToFuture(JsEvalResult? result) {
+  //   _checkEngineIsStarted();
+  //   return _jsRuntime.handlePromise(result ?? JsEvalResult("null", null));
+  // }
 
   /// Runs javascript [code].
   /// It throws [BeagleJSEngineException] if [BeagleJSEngine] isn't started.
-  JsEvalResult? evaluateJsCode(String code) {
+  Future<JsEvalResult?> evaluateJsCode(String code) async {
     _checkEngineIsStarted();
-    return _jsRuntime.evaluate(code);
+    return await _jsRuntime.evaluateAsync(code);
   }
 
   /// Lazily starts the [BeagleJSEngine].
@@ -103,12 +103,12 @@ class BeagleJSEngine {
   Future<void> start() async {
     if (!_isEngineStarted()) {
       _engineState = BeagleJSEngineState.STARTED;
-      _jsRuntime.enableHandlePromises();
+      // _jsRuntime.enableHandlePromises();
 
       _setupMessages();
 
       final beagleJS = await rootBundle.loadString('packages/beagle/assets/js/beagle.js');
-      _jsRuntime.evaluate('var window = global = globalThis;');
+      _jsRuntime.evaluateAsync('var window = global = globalThis;');
 
       await _jsRuntime.evaluateAsync(beagleJS);
     }

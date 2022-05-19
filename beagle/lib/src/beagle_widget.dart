@@ -21,9 +21,9 @@ import 'package:flutter/widgets.dart';
 // TODO: THE UNIT TESTS WILL BE WRITTEN AFTER RESOLVING THE DEPENDENCY INJECTION
 /// A widget that displays content of beagle.
 class BeagleWidget extends StatefulWidget {
-  BeagleWidget(this.view);
+  // BeagleWidget(this.view);
 
-  final BeagleView view;
+  BeagleView? view;
 
   int transitionDelay = 0;
 
@@ -31,8 +31,22 @@ class BeagleWidget extends StatefulWidget {
   BeagleWidgetState createState() => BeagleWidgetState();
 }
 
-class BeagleWidgetState extends State<BeagleWidget> with BeagleConsumer {
+class BeagleWidgetState extends State<BeagleWidget> {
   Widget? _widgetState;
+
+  late final BeagleService beagle;
+  bool _hasInitialized = false;
+
+  @override
+  @mustCallSuper
+  Widget build(BuildContext context) {
+    if (!_hasInitialized) {
+      beagle = findBeagleService(context);
+      initBeagleState();
+      _hasInitialized = true;
+    }
+    return buildBeagleWidget(context);
+  }
 
   /* this builds the widget tree while also filling a map (componentToNodeData) that links each component (by id) to
   its NodeData.*/
@@ -47,7 +61,7 @@ class BeagleWidgetState extends State<BeagleWidget> with BeagleConsumer {
       if (componentToNodeData.containsKey(tree.getId())) {
         throw ErrorDescription('Error: found replicated id in the UI tree: ${tree.getId()}.');
       }
-      componentToNodeData[tree.getId()] = BeagleNodeData(tree, componentChildren, widget.view);
+      componentToNodeData[tree.getId()] = BeagleNodeData(tree, componentChildren, widget.view!);
       return BeagleNode(id: tree.getId(), child: builder());
     } catch (error) {
       beagle.logger.error("Could not build component ${tree.getType()} with id ${tree.getId()} due to the following error:");
@@ -57,7 +71,7 @@ class BeagleWidgetState extends State<BeagleWidget> with BeagleConsumer {
   }
 
   void _updateCurrentUI(BeagleUIElement? tree) {
-    if (tree != null) {
+    if (widget.view != null && tree != null) {
       final componentToNodeData = <String, BeagleNodeData>{};
       final widgetTree = _buildViewFromTree(tree, componentToNodeData);
       final flutterTree = BeagleRootNode(child: widgetTree, componentToNodeData: componentToNodeData);
@@ -67,40 +81,46 @@ class BeagleWidgetState extends State<BeagleWidget> with BeagleConsumer {
 
   @override
   void dispose() {
-    widget.view.destroy();
+    widget.view?.destroy();
     super.dispose();
   }
 
-  @override
   void initBeagleState() {
-    // setup actions
-    widget.view.onAction(({required action, required element, required view}) {
-      final handler = beagle.actions[action.getType().toLowerCase()];
-      if (handler == null) {
-        return beagle.logger.error("Couldn't find action with name ${action.getType()}. It will be ignored.");
-      }
-      handler(action: action, view: view, element: element, context: context);
-    });
+    () async {
+      await Future.doWhile(() async {
+        await Future.delayed(Duration(milliseconds: 10), () {});
+        return widget.view == null;
+      });
 
-    // update the UI everytime the beagle view changes
-    widget.view.onChange((tree) {
-      if (widget.transitionDelay > 0) {
-        Future.delayed(Duration(milliseconds: widget.transitionDelay), () async {
+      // setup actions
+      widget.view!.onAction(({required action, required element, required view}) {
+        final handler = beagle.actions[action.getType().toLowerCase()];
+        if (handler == null) {
+          return beagle.logger.error("Couldn't find action with name ${action.getType()}. It will be ignored.");
+        }
+        handler(action: action, view: view, element: element, context: context);
+      });
+
+      // update the UI everytime the beagle view changes
+      widget.view!.onChange((tree) {
+        if (widget.transitionDelay > 0) {
+          Future.delayed(Duration(milliseconds: widget.transitionDelay), () async {
+            _updateCurrentUI(tree);
+          });
+        } else {
           _updateCurrentUI(tree);
-        });
-      } else {
-        _updateCurrentUI(tree);
-      }
-    });
+        }
+      });
 
-    // first render:
-    final tree = widget.view.getTree();
-    if (tree != null) {
-      widget.view.getRenderer().doFullRender(tree);
-    }
+      // first render:
+      final tree = await widget.view!.getTree();
+
+      if (tree != null) {
+        widget.view!.getRenderer().doFullRender(tree);
+      }
+    }();
   }
 
-  @override
   Widget buildBeagleWidget(BuildContext context) {
     return _widgetState ?? CupertinoPageScaffold(child: Container());
   }

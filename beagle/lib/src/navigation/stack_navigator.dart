@@ -57,9 +57,9 @@ class StackNavigator extends StatelessWidget {
   }
 
   void _addHistory(String routeName, BeagleView view) {
-    void render([BeagleUIElement? tree]) {
+    Future<void> render([BeagleUIElement? tree]) async {
       if (tree == null) {
-        final currentTree = view.getTree();
+        final currentTree = await view.getTree();
         if (currentTree != null) view.getRenderer().doPartialRender(currentTree);
       } else {
         view.getRenderer().doFullRender(tree);
@@ -77,35 +77,26 @@ class StackNavigator extends StatelessWidget {
     try {
       final tree = await beagle.viewClient.fetch(RemoteView(beagle.urlBuilder.build(currentRoute)));
       _history.last.render(tree);
-    } catch(e) {
+    } catch (e) {
       beagle.logger.error('Could not reload the view. See the error below for more details.\n$e');
     }
   }
 
-  List<Route<dynamic>> _onGenerateInitialRoutes(NavigatorState state, String routeName) {
-    // start testing purposes
-    if (initialPages.isNotEmpty) {
-      for (Route<dynamic> page in initialPages) {
-        if (page.settings.name != null && page.settings.name!.isNotEmpty) {
-          _history.add(StackNavigatorHistory(page.settings.name!, _TestPurposeLocalContextsManager(), ([_]) {}));
-        }
-      }
-      _firstLoadCompleter.complete();
-      return initialPages;
-    }
-    // end testing purposes
+  List<Route> _onGenerateInitialRoutes(NavigatorState state, String routeName) {
+    final widget = beagle.createWidget();
 
-    final beagleViewWidget = beagle.createView(rootNavigator);
-    if (initialRoute is LocalView) {
-      setNavigationContext(initialRoute.navigationContext, beagleViewWidget.view.getLocalContexts(), false);
-      controller.onSuccess(
-        view: beagleViewWidget.view,
-        context: state.context,
-        screen: (initialRoute as LocalView).screen,
-      );
-      _firstLoadCompleter.complete();
-    } else {
-      () async {
+    () async {
+      final beagleViewWidget = await beagle.createView(rootNavigator, widget);
+
+      if (initialRoute is LocalView) {
+        setNavigationContext(initialRoute.navigationContext, beagleViewWidget.view.getLocalContexts(), false);
+        controller.onSuccess(
+          view: beagleViewWidget.view,
+          context: state.context,
+          screen: (initialRoute as LocalView).screen,
+        );
+        _firstLoadCompleter.complete();
+      } else {
         await _fetchContentAndUpdateView(
           view: beagleViewWidget.view,
           context: state.context,
@@ -114,11 +105,12 @@ class StackNavigator extends StatelessWidget {
           navigationContext: initialRoute.navigationContext,
         );
         _firstLoadCompleter.complete();
-      }();
-    }
+      }
 
-    _addHistory(routeName, beagleViewWidget.view);
-    return [_buildRoute(beagleViewWidget.widget, routeName)];
+      _addHistory(routeName, beagleViewWidget.view);
+    }();
+
+    return [_buildRoute(widget, routeName)];
   }
 
   String _getRouteId(BeagleRoute route) => route is LocalView ? route.screen.getId() : (route as RemoteView).url;
@@ -180,8 +172,7 @@ class StackNavigator extends StatelessWidget {
     _poppedNavigationContext = navigationContext;
 
     if (!_history.map((h) => h.routeName).contains(routeIdentifier)) {
-      return beagle.logger
-          .error("Cannot pop to \"$routeIdentifier\" because it doesn't exist in the navigation history.");
+      return beagle.logger.error("Cannot pop to \"$routeIdentifier\" because it doesn't exist in the navigation history.");
     }
     _thisNavigatorKey.currentState!.popUntil((route) => route.settings.name == routeIdentifier);
     while (_history.last.routeName != routeIdentifier) {
@@ -212,7 +203,7 @@ class StackNavigator extends StatelessWidget {
 
   Future<void> pushView(BeagleRoute route, BuildContext context) async {
     final routeId = _getRouteId(route);
-    final beagleViewWidget = beagle.createView(rootNavigator);
+    final beagleViewWidget = await beagle.createView(rootNavigator, beagle.createWidget());
     bool completed = false;
 
     void complete() {
@@ -267,28 +258,4 @@ class StackNavigator extends StatelessWidget {
       ),
     );
   }
-}
-
-class _TestPurposeLocalContextsManager implements LocalContextsManager {
-  @override
-  void clearAll() {}
-
-  @override
-  List<BeagleDataContext> getAllAsDataContext() {
-    return [];
-  }
-
-  @override
-  LocalContext? getContext(String id) {
-    return null;
-  }
-
-  @override
-  BeagleDataContext? getContextAsDataContext(String id) {}
-
-  @override
-  void removeContext(String id) {}
-
-  @override
-  void setContext(String id, value, [String? path]) {}
 }

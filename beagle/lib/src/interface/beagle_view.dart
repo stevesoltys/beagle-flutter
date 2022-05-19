@@ -31,7 +31,7 @@ abstract class BeagleView {
   Renderer getRenderer();
 
   /// Gets a copy of the currently rendered tree.
-  BeagleUIElement? getTree();
+  Future<BeagleUIElement?> getTree();
 
   /// Gets the navigator that spawned this Beagle View, if any.
   BeagleNavigator getNavigator();

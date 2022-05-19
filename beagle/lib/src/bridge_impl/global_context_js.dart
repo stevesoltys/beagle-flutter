@@ -33,28 +33,27 @@ class GlobalContextJS implements GlobalContext {
   final BeagleJSEngine _jsEngine;
 
   @override
-  void clear([String? path]) {
+  Future<void> clear([String? path]) async {
     final args = path == null ? '' : "'$path'";
-    _jsEngine.evaluateJsCode('global.beagle.getService().globalContext.clear($args)');
+    await _jsEngine.evaluateJsCode('global.beagle.getService().globalContext.clear($args)');
   }
 
   @override
-  T get<T>([String? path]) {
+  Future<T> get<T>([String? path]) async {
     final args = path == null ? '' : "'$path'";
-    final stringResult = _jsEngine
-      .evaluateJsCode('JSON.stringify(global.beagle.getService().globalContext.get($args) || null)')?.stringResult;
+    final stringResult = (await _jsEngine.evaluateJsCode('JSON.stringify(global.beagle.getService().globalContext.get($args) || null)'))?.stringResult;
     return stringResult == null ? null : json.decode(stringResult);
   }
 
   @override
-  void set<T>(T value, [String? path]) {
+  Future<void> set<T>(T value, [String? path]) async {
     if (!_isEncodable(value)) {
       throw GlobalContextSerializationError(value.runtimeType);
     }
 
     final jsonString = json.encode(value);
     final args = path == null ? jsonString : "$jsonString, '$path'";
-    _jsEngine.evaluateJsCode('global.beagle.getService().globalContext.set($args)');
+    await _jsEngine.evaluateJsCode('global.beagle.getService().globalContext.set($args)');
   }
 
   bool _isEncodable(dynamic value) => value is num || value is String || value is List || value is Map;

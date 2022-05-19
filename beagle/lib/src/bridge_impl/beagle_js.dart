@@ -26,7 +26,7 @@ class BeagleJS {
   BeagleJS(this._beagle)
       : engine = BeagleJSEngine(
           _beagle,
-          JavascriptRuntimeWrapper(getJavascriptRuntime(forceJavascriptCoreOnAndroid: true, xhr: false)),
+          JavascriptRuntimeWrapper(),
         );
 
   final BeagleService _beagle;

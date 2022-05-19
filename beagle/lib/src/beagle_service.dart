@@ -42,6 +42,7 @@ Map<String, T> _toLowercaseKeys<T>(Map<String, T> dictionary) {
 
 class BeagleViewWidget {
   BeagleViewWidget(this.view, this.widget);
+
   final BeagleView view;
   final BeagleWidget widget;
 }
@@ -121,8 +122,7 @@ class BeagleService {
         components = _toLowercaseKeys(components),
         actions = _toLowercaseKeys({...defaultActions, ...(actions ?? {})}) {
     this.imageDownloader = imageDownloader ?? DefaultBeagleImageDownloader(httpClient: httpClient);
-    this.viewClient =
-        viewClient ?? DefaultViewClient(httpClient: httpClient, logger: logger, urlBuilder: this.urlBuilder);
+    this.viewClient = viewClient ?? DefaultViewClient(httpClient: httpClient, logger: logger, urlBuilder: this.urlBuilder);
     this.defaultNavigationController = defaultNavigationController ?? DefaultNavigationController(logger);
     js = BeagleJS(this);
     globalContext = GlobalContextJS(js.engine);
@@ -154,9 +154,16 @@ class BeagleService {
   late final String hotReloadingUrl;
 
   // factory methods
-  BeagleViewWidget createView(BeagleNavigator navigator) {
-    final view = BeagleViewJS(js.engine, navigator);
-    final widget = BeagleWidget(view);
+  BeagleWidget createWidget() {
+    return BeagleWidget();
+  }
+
+  // factory methods
+  Future<BeagleViewWidget> createView(BeagleNavigator navigator, BeagleWidget widget) async {
+    final viewId = await js.engine.createBeagleView();
+
+    final view = BeagleViewJS(viewId, js.engine, navigator);
+    widget.view = view;
     return BeagleViewWidget(view, widget);
   }
 

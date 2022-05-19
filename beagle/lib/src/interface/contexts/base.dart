@@ -15,9 +15,9 @@
  */
 
 abstract class BaseContext {
-  T get<T>([String path]);
+  Future<T> get<T>([String path]);
 
-  void set<T>(T value, [String path]);
+  Future<void> set<T>(T value, [String path]);
 
-  void clear([String path]);
+  Future<void> clear([String path]);
 }

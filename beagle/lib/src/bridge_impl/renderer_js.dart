@@ -51,19 +51,19 @@ class RendererJS implements Renderer {
   }
 
   @override
-  void doTemplateRender({
+  Future<void> doTemplateRender({
     required TemplateManager templateManager,
     required String anchor,
     required List<List<BeagleDataContext>> contexts,
     BeagleUIElement Function(BeagleUIElement, int)? componentManager,
     TreeUpdateMode? mode,
-  }) {
+  }) async {
     final globalRender = "$globalBeagle.render";
     final templatesJs = jsonEncode(templateManager.toJson());
     final modeJs = _getJsTreeUpdateModeName(mode ?? TreeUpdateMode.replace);
 
-    dynamic evaluateRenderFn(String functionName, String arguments) {
-      return json.decode(_jsEngine.evaluateJsCode("$globalRender.$functionName($arguments)")?.stringResult ?? "null");
+    dynamic evaluateRenderFn(String functionName, String arguments) async {
+      return json.decode((await _jsEngine.evaluateJsCode("$globalRender.$functionName($arguments)"))?.stringResult ?? "null");
     }
 
     List<Map<String, dynamic>> encodeContexts(List<BeagleDataContext> contexts) {
@@ -71,8 +71,7 @@ class RendererJS implements Renderer {
     }
 
     if (componentManager != null) {
-      final rawHierarchy = json
-          .decode(_jsEngine.evaluateJsCode("$globalRender.getTreeContextHierarchy('$_viewId')")?.stringResult ?? '[]');
+      final rawHierarchy = json.decode((await _jsEngine.evaluateJsCode("$globalRender.getTreeContextHierarchy('$_viewId')"))?.stringResult ?? '[]');
       final globalHierarchy = (rawHierarchy as List<dynamic>).map((raw) => BeagleDataContext.fromJson(raw)).toList();
       final contextTemplates = List<Map<String, dynamic>>.empty(growable: true);
 
@@ -80,21 +79,19 @@ class RendererJS implements Renderer {
         final context = contexts[i];
         final contextHierarchy = [...context, ...globalHierarchy];
         final templateArgs = ["'$_viewId'", json.encode(encodeContexts(contextHierarchy)), templatesJs];
-        final Map<String, dynamic> template = evaluateRenderFn("getContextEvaluatedTemplate", templateArgs.join(', '));
+        final Map<String, dynamic> template = await evaluateRenderFn("getContextEvaluatedTemplate", templateArgs.join(', '));
         final adjusted = componentManager(BeagleUIElement(deepCloneMap(template)), i);
         adjusted.properties['_implicitContexts_'] = context;
 
-        final preProcessedElement = evaluateRenderFn("preProcessTemplateTree", adjusted.toString());
+        final preProcessedElement = await evaluateRenderFn("preProcessTemplateTree", adjusted.toString());
         contextTemplates.add(preProcessedElement);
       }
 
-      _jsEngine.evaluateJsCode(
-          "$globalRender.doTreeFullRender('$_viewId', '$anchor', ${json.encode(contextTemplates)}, '$modeJs')");
+      _jsEngine.evaluateJsCode("$globalRender.doTreeFullRender('$_viewId', '$anchor', ${json.encode(contextTemplates)}, '$modeJs')");
     } else {
       final contextsJs = jsonEncode(contexts.map((c) => encodeContexts(c)).toList()).trim();
       final arguments = [templatesJs, "'$anchor'", contextsJs, "null", "'$modeJs'"];
-      _jsEngine.evaluateJsCode(
-          "$globalBeagle.getViewById('$_viewId').getRenderer().doTemplateRender(${arguments.join(", ")})");
+      _jsEngine.evaluateJsCode("$globalBeagle.getViewById('$_viewId').getRenderer().doTemplateRender(${arguments.join(", ")})");
     }
   }
 }

@@ -25,14 +25,13 @@ import 'renderer_js.dart';
 
 /// Creates a new Beagle View. If this view is created by a navigator, it must be specified in the constructor.
 class BeagleViewJS implements BeagleView {
-  BeagleViewJS(this._jsEngine, this._parentNavigator) {
-    _id = _jsEngine.createBeagleView();
+  BeagleViewJS(this._id, this._jsEngine, this._parentNavigator) {
     BeagleViewJS.views[_id] = this;
     _renderer = RendererJS(_jsEngine, _id);
     _localContextsManager = LocalContextsManagerJS(_jsEngine, _id);
   }
 
-  late String _id;
+  final String _id;
   late Renderer _renderer;
   late LocalContextsManager _localContextsManager;
   final BeagleNavigator _parentNavigator;
@@ -55,8 +54,8 @@ class BeagleViewJS implements BeagleView {
   Renderer getRenderer() => _renderer;
 
   @override
-  BeagleUIElement? getTree() {
-    final result = _jsEngine.evaluateJsCode("global.beagle.getViewById('$_id').getTreeAsJson()")?.stringResult;
+  Future<BeagleUIElement?> getTree() async {
+    final result = (await _jsEngine.evaluateJsCode("global.beagle.getViewById('$_id').getTreeAsJson()"))?.stringResult;
 
     if (result == null) return null;
 

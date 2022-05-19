@@ -33,7 +33,7 @@ abstract class GlobalContext implements BaseContext {
   /// The type returned by this function is always one of the following: Map, Array, num, bool or
   /// String.
   @override
-  T get<T>([String path]);
+  Future<T> get<T>([String path]);
 
   /// Sets a [value] in the global context according to the [path] passed as parameter. The [path]
   /// can be ommited, in this case, the [value] is set to the entire global context.
@@ -43,7 +43,7 @@ abstract class GlobalContext implements BaseContext {
   /// All values in the GlobalContext must be encodable, i.e. Map, Array, number, bool or String.
   /// If the [value] is not encodable, an exception is thrown.
   @override
-  void set<T>(T value, [String path]);
+  Future<void> set<T>(T value, [String path]);
 
   /// Removes a value from the global context according to the [path] passed as parameter.
   ///
@@ -52,5 +52,5 @@ abstract class GlobalContext implements BaseContext {
   /// - If the provided [path] refers to an element of a list, the element is set to null.
   /// - If [path] is ommited, the entire global context is set to null.
   @override
-  void clear([String path]);
+  Future<void> clear([String path]);
 }

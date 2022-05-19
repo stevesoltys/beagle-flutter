@@ -34,14 +34,14 @@ class LocalContextsManagerJS implements LocalContextsManager {
   LocalContextsManagerJS(this._jsEngine, this._viewId);
 
   @override
-  void clearAll() {
-    _jsEngine.evaluateJsCode('global.beagle.getViewById("$_viewId").getLocalContexts().clearAll()');
+  Future<void> clearAll() async {
+    await _jsEngine.evaluateJsCode('global.beagle.getViewById("$_viewId").getLocalContexts().clearAll()');
   }
 
   @override
-  List<BeagleDataContext> getAllAsDataContext() {
-    final result = _jsEngine
-        .evaluateJsCode('global.beagle.getViewById("$_viewId").getLocalContexts().getAllAsDataContext()')
+  Future<List<BeagleDataContext>> getAllAsDataContext() async {
+    final result = (await _jsEngine
+        .evaluateJsCode('global.beagle.getViewById("$_viewId").getLocalContexts().getAllAsDataContext()'))
         ?.stringResult;
     if (result != null && result.isNotEmpty) {
       final dataContexts = json.decode(result) as List<Map<String, dynamic>>;
@@ -51,9 +51,9 @@ class LocalContextsManagerJS implements LocalContextsManager {
   }
 
   @override
-  LocalContext? getContext(String id) {
-    final result = _jsEngine
-        .evaluateJsCode('global.beagle.getViewById("$_viewId").getLocalContexts().getContextAsDataContext("$id")')
+  Future<LocalContext?> getContext(String id) async {
+    final result = (await _jsEngine
+        .evaluateJsCode('global.beagle.getViewById("$_viewId").getLocalContexts().getContextAsDataContext("$id")'))
         ?.stringResult;
     if (result != null && result.isNotEmpty) {
       return LocalContextJS(_jsEngine, _viewId, id);
@@ -62,9 +62,9 @@ class LocalContextsManagerJS implements LocalContextsManager {
   }
 
   @override
-  BeagleDataContext? getContextAsDataContext(String id) {
-    final result = _jsEngine
-        .evaluateJsCode('global.beagle.getViewById("$_viewId").getLocalContexts().getContextAsDataContext("$id")')
+  Future<BeagleDataContext?> getContextAsDataContext(String id) async {
+    final result = (await _jsEngine
+        .evaluateJsCode('global.beagle.getViewById("$_viewId").getLocalContexts().getContextAsDataContext("$id")'))
         ?.stringResult;
     if (result != null && result.isNotEmpty) {
       return BeagleDataContext.fromJson(json.decode(result));
@@ -73,19 +73,19 @@ class LocalContextsManagerJS implements LocalContextsManager {
   }
 
   @override
-  void removeContext(String id) {
-    _jsEngine.evaluateJsCode('global.beagle.getViewById("$_viewId").getLocalContexts().removeContext("$id")');
+  Future<void> removeContext(String id) async {
+    await _jsEngine.evaluateJsCode('global.beagle.getViewById("$_viewId").getLocalContexts().removeContext("$id")');
   }
 
   @override
-  void setContext(String id, value, [String? path]) {
+  Future<void> setContext(String id, value, [String? path]) async {
     if (!_isEncodable(value)) {
       throw LocalContextsManagerSerializationError(value.runtimeType, id);
     }
 
     final pathEncoded = path == null || path.isEmpty ? '' : path;
     final valueEncoded = json.encode(value);
-    _jsEngine.evaluateJsCode(
+    await _jsEngine.evaluateJsCode(
         'global.beagle.getViewById("$_viewId").getLocalContexts().setContext("$id", $valueEncoded, "$pathEncoded")');
   }
 

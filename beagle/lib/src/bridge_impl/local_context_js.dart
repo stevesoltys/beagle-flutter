@@ -35,30 +35,26 @@ class LocalContextJS implements LocalContext {
   final String _contextId;
 
   @override
-  void clear([String? path]) {
+  Future<void> clear([String? path]) async {
     final args = path == null || path.isEmpty ? '' : '"$path"';
-    _jsEngine.evaluateJsCode(
-        'global.beagle.getViewById("$_viewId").getLocalContexts().getContext("$_contextId").clear($args)');
+    await _jsEngine.evaluateJsCode('global.beagle.getViewById("$_viewId").getLocalContexts().getContext("$_contextId").clear($args)');
   }
 
   @override
-  T get<T>([String? path]) {
+  Future<T> get<T>([String? path]) async {
     final args = path == null || path.isEmpty ? '' : '"$path"';
-    return _jsEngine
-        .evaluateJsCode('global.beagle.getViewById("$_viewId").getLocalContexts().getContext("$_contextId").get($args)')
-        ?.rawResult;
+    return (await _jsEngine.evaluateJsCode('global.beagle.getViewById("$_viewId").getLocalContexts().getContext("$_contextId").get($args)'))?.rawResult;
   }
 
   @override
-  void set<T>(T value, [String? path]) {
+  Future<void> set<T>(T value, [String? path]) async {
     if (!_isEncodable(value)) {
       throw LocalContextSerializationError(value.runtimeType, _contextId);
     }
 
     final jsonString = json.encode(value);
     final args = path == null || path.isEmpty ? jsonString : '$jsonString, "$path"';
-    _jsEngine.evaluateJsCode(
-        'global.beagle.getViewById("$_viewId").getLocalContexts().getContext("$_contextId").set($args)');
+    await _jsEngine.evaluateJsCode('global.beagle.getViewById("$_viewId").getLocalContexts().getContext("$_contextId").set($args)');
   }
 
   bool _isEncodable(dynamic value) => value is num || value is String || value is List || value is Map;

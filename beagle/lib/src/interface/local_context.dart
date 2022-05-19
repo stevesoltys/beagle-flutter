@@ -34,7 +34,7 @@ abstract class LocalContext implements BaseContext {
   /// The type returned by this function is always one of the following: Map, Array, num, bool or
   /// String.
   @override
-  T get<T>([String path]);
+  Future<T> get<T>([String path]);
 
   /// Sets a [value] in the local context according to the [path] passed as parameter. The [path]
   /// can be ommited, in this case, the [value] is set to the entire local context.
@@ -44,7 +44,7 @@ abstract class LocalContext implements BaseContext {
   /// All values in the LocalContext must be encodable, i.e. Map, Array, number, bool or String.
   /// If the [value] is not encodable, an exception is thrown.
   @override
-  void set<T>(T value, [String path]);
+  Future<void> set<T>(T value, [String path]);
 
   /// Removes a value from the local context according to the [path] passed as parameter.
   ///
@@ -53,5 +53,5 @@ abstract class LocalContext implements BaseContext {
   /// - If the provided [path] refers to an element of a list, the element is set to null.
   /// - If [path] is ommited, the entire local context is set to null.
   @override
-  void clear([String path]);
+  Future<void> clear([String path]);
 }

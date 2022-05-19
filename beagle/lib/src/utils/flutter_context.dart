@@ -22,7 +22,7 @@ BeagleView findAncestorBeagleView(BuildContext context) {
   if (widget == null) {
     throw ErrorDescription('Could not find any BeagleWidget in the current context.');
   }
-  return widget.view;
+  return widget.view!;
 }
 
 BeagleService findBeagleService(BuildContext context) {

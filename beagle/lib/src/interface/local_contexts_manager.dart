@@ -17,15 +17,15 @@
 import 'package:beagle/beagle.dart';
 
 abstract class LocalContextsManager {
-  LocalContext? getContext(String id);
+  Future<LocalContext?> getContext(String id);
 
-  void setContext(String id, dynamic value, [String? path]);
+  Future<void> setContext(String id, dynamic value, [String? path]);
 
-  List<BeagleDataContext> getAllAsDataContext();
+  Future<List<BeagleDataContext>> getAllAsDataContext();
 
-  BeagleDataContext? getContextAsDataContext(String id);
+  Future<BeagleDataContext?> getContextAsDataContext(String id);
 
-  void removeContext(String id);
+  Future<void> removeContext(String id);
 
-  void clearAll();
+  Future<void> clearAll();
 }

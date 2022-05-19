@@ -29,7 +29,7 @@ class BeagleJsEngineJsHelpers {
       return ([dynamic argument]) {
         final args = argument == null ? "'$value'" : "'$value', ${json.encode(argument)}";
         final jsMethod = viewId == null ? 'call(' : "callViewFunction('$viewId', ";
-        _jsRuntime.evaluate('$globalBeagle.$jsMethod$args)');
+        _jsRuntime.evaluateAsync('$globalBeagle.$jsMethod$args)');
       };
     }
 
@@ -53,6 +53,6 @@ class BeagleJsEngineJsHelpers {
   }
 
   void callJsFunction(String functionId, [Map<String, dynamic>? argsMap]) {
-    _jsRuntime.evaluate('$globalBeagle.call("$functionId"${argsMap != null ? ", ${json.encode(argsMap)}" : ""})');
+    _jsRuntime.evaluateAsync('$globalBeagle.call("$functionId"${argsMap != null ? ", ${json.encode(argsMap)}" : ""})');
   }
 }
