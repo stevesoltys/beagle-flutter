@@ -103,13 +103,7 @@ class BeagleWidgetState extends State<BeagleWidget> {
 
       // update the UI everytime the beagle view changes
       widget.view!.onChange((tree) {
-        if (widget.transitionDelay > 0) {
-          Future.delayed(Duration(milliseconds: widget.transitionDelay), () async {
-            _updateCurrentUI(tree);
-          });
-        } else {
-          _updateCurrentUI(tree);
-        }
+        _updateCurrentUI(tree);
       });
 
       // first render:

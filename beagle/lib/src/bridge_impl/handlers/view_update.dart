@@ -27,6 +27,8 @@ class BeagleJSEngineViewUpdateHandler implements BeagleJSEngineBaseHandlerWithLi
   @override
   final Map<String, List<ViewChangeListener>> listenersMap = {};
 
+  final Map<String, BeagleUIElement> lastUpdates = {};
+
   @override
   String get channelName => 'beagleView.update';
 
@@ -39,8 +41,12 @@ class BeagleJSEngineViewUpdateHandler implements BeagleJSEngineBaseHandlerWithLi
     final deserialized = _jsHelpers.deserializeJsFunctions(message['tree'], viewId);
     final uiElement = BeagleUIElement(deserialized);
 
-    for (ViewChangeListener listener in (listenersMap[viewId] ?? [])) {
-      listener(uiElement);
+    if (lastUpdates[viewId] == null || lastUpdates[viewId]?.properties != uiElement.properties) {
+      for (ViewChangeListener listener in (listenersMap[viewId] ?? [])) {
+        listener(uiElement);
+      }
+
+      lastUpdates[viewId] = uiElement;
     }
   }
 }
