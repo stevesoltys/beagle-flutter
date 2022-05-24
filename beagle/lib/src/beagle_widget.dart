@@ -21,11 +21,7 @@ import 'package:flutter/widgets.dart';
 // TODO: THE UNIT TESTS WILL BE WRITTEN AFTER RESOLVING THE DEPENDENCY INJECTION
 /// A widget that displays content of beagle.
 class BeagleWidget extends StatefulWidget {
-  // BeagleWidget(this.view);
-
   BeagleView? view;
-
-  int transitionDelay = 0;
 
   @override
   BeagleWidgetState createState() => BeagleWidgetState();

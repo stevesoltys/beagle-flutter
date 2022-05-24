@@ -8,8 +8,7 @@ import 'package:flutter_js/javascriptcore/jscore_runtime.dart';
 typedef dynamic _Decode(Map obj);
 
 List<_Decode> _decoders = [
-  _decodeJSError,
-  // _decodeIsolateFunction,
+  _decodeJSError
 ];
 
 JSError? _decodeJSError(Map obj) {
@@ -17,23 +16,9 @@ JSError? _decodeJSError(Map obj) {
   return null;
 }
 
-// IsolateFunction? _decodeIsolateFunction(Map obj) {
-//   if (obj.containsKey(#jsFunctionPort))
-//     return IsolateFunction._fromId(
-//       obj[#jsFunctionId],
-//       obj[#jsFunctionPort],
-//     );
-//   return null;
-// }
-
-abstract class _IsolateEncodable {
-  Map _encode();
-}
-
 dynamic _encodeData(dynamic data, {Map<dynamic, dynamic>? cache}) {
   if (cache == null) cache = Map();
   if (cache.containsKey(data)) return cache[data];
-  if (data is _IsolateEncodable) return data._encode();
   if (data is Pointer) return null;
   if (data is List) {
     final ret = [];
@@ -153,7 +138,7 @@ void _runJsIsolate(Map spawnMessage) async {
   javascriptCore.executePendingJob();
 }
 
-class IsolateTest {
+class JsRuntimeIsolated {
   Future<SendPort>? _sendPort;
 
   /// Max stack size for quickjs.
@@ -165,7 +150,7 @@ class IsolateTest {
   ///
   /// Pass handlers to implement js-dart interaction and resolving modules. The `methodHandler` is
   /// used in isolate, so **the handler function must be a top-level function or a static method**.
-  IsolateTest({this.stackSize});
+  JsRuntimeIsolated({this.stackSize});
 
   _ensureEngine() {
     if (_sendPort != null) return;
@@ -189,7 +174,7 @@ class IsolateTest {
           final channel = msg[#channel];
           final message = msg[#message];
 
-          channels[channel]?.call(message);
+          await channels[channel]?.call(message);
           break;
       }
     }, onDone: () {
@@ -241,7 +226,7 @@ class IsolateTest {
   }
 
   /// Evaluate js script.
-  Future<bool> setupBridge(String channelName, void Function(dynamic args) fn) async {
+  Future<bool> setupBridge(String channelName, Future<void> Function(dynamic args) fn) async {
     if (channels.keys.contains(channelName)) return false;
     channels[channelName] = fn;
 

@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
-import 'package:beagle/src/bridge_impl/isolate_js_runtime.dart';
 import 'package:flutter_js/flutter_js.dart';
+
+import 'js_runtime_isolated.dart';
 
 class JavascriptRuntimeWrapper {
   JavascriptRuntimeWrapper();
 
-  final JavascriptRuntime _jsRuntime = IsolateJsWrapper();
-
-  JsEvalResult? evaluate(String code) => _jsRuntime.evaluate(code);
+  final JsRuntimeIsolated _jsRuntime = JsRuntimeIsolated(stackSize: 1024 * 1024);
 
   Future<JsEvalResult>? evaluateAsync(String code) async {
-    return await _jsRuntime.evaluateAsync(code);
+    final result = await _jsRuntime.evaluate(code);
+
+    return JsEvalResult(result.toString(), result, isError: false, isPromise: false);
   }
 
-  void onMessage(String channelName, void Function(dynamic args) fn) {
+  void onMessage(String channelName, Future<void> Function(dynamic args) fn) {
     _jsRuntime.setupBridge(channelName, fn);
   }
-
-  Future<JsEvalResult> handlePromise(JsEvalResult value, {Duration? timeout}) => _jsRuntime.handlePromise(value, timeout: timeout);
-
-  dynamic enableHandlePromises() => _jsRuntime.enableHandlePromises();
 }

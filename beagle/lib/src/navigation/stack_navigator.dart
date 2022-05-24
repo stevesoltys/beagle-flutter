@@ -216,12 +216,6 @@ class StackNavigator extends StatelessWidget {
         settings: RouteSettings(name: routeId),
       );
 
-      widget.transitionDelay = materialRoute.transitionDuration.inMilliseconds;
-
-      Future.delayed(Duration(milliseconds: materialRoute.transitionDuration.inMilliseconds), () async {
-        beagleViewWidget.widget.transitionDelay = 0;
-      });
-
       _thisNavigatorKey.currentState!.push(materialRoute);
 
       _addHistory(routeId, beagleViewWidget.view);

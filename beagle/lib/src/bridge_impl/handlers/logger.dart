@@ -25,7 +25,7 @@ class BeagleJSEngineLoggerHandler implements BeagleJSEngineBaseHandler {
   String get channelName => 'logger';
 
   @override
-  void notify(dynamic loggerMessage) {
+  Future<void> notify(dynamic loggerMessage) async {
     final message = loggerMessage['message'];
     final level = loggerMessage['level'];
 

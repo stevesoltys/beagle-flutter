@@ -31,7 +31,7 @@ class BeagleJSEngineOperationHandler implements BeagleJSEngineBaseHandler {
   String get channelName => 'operation';
 
   @override
-  dynamic notify(dynamic message) {
+  Future<dynamic> notify(dynamic message) async {
     if (_listener == null) {
       _beagle.logger.error('Could find a listener for operations. This is a problem within the Beagle library.');
       return null;

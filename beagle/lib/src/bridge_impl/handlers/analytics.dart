@@ -31,7 +31,7 @@ class BeagleJSEngineAnalyticsHandler implements BeagleJSEngineBaseHandler {
   String get getConfigChannelName => 'analytics.getConfig';
 
   @override
-  void notify(dynamic map) {
+  Future<void> notify(dynamic map) async {
     if (_beagle.analyticsProvider != null) {
       final record = AnalyticsRecord.fromMap(map);
       /*
@@ -43,7 +43,7 @@ class BeagleJSEngineAnalyticsHandler implements BeagleJSEngineBaseHandler {
     }
   }
 
-  void getConfig(dynamic map) {
+  Future<void> getConfig(dynamic map) async {
     if (_beagle.analyticsProvider != null) {
       _jsHelpers.callJsFunction(map["functionId"], _beagle.analyticsProvider!.getConfig().toMap());
     }

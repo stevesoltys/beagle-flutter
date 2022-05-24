@@ -24,28 +24,38 @@ class BeagleJsEngineJsHelpers {
 
   BeagleJsEngineJsHelpers(JavascriptRuntimeWrapper jsRuntime) : _jsRuntime = jsRuntime;
 
-  dynamic deserializeJsFunctions(dynamic value, [String? viewId]) {
-    if (value.runtimeType.toString() == 'String' && value.toString().startsWith('__beagleFn:')) {
-      return ([dynamic argument]) {
-        final args = argument == null ? "'$value'" : "'$value', ${json.encode(argument)}";
-        final jsMethod = viewId == null ? 'call(' : "callViewFunction('$viewId', ";
-        _jsRuntime.evaluateAsync('$globalBeagle.$jsMethod$args)');
-      };
+  Future<dynamic> deserializeJsFunctions(dynamic value, [String? viewId]) async {
+    if (value is String) {
+      if (value.toString().startsWith('__beagleFn:')) {
+        return ([dynamic argument]) async {
+          final args = argument == null ? "'$value'" : "'$value', ${json.encode(argument)}";
+          final jsMethod = viewId == null ? 'call(' : "callViewFunction('$viewId', ";
+          _jsRuntime.evaluateAsync('$globalBeagle.$jsMethod$args)');
+        };
+      }
     }
 
-    if (value.runtimeType.toString() == 'List<dynamic>') {
-      return (value as List<dynamic>).map((item) => deserializeJsFunctions(item, viewId)).toList();
+    if (value is List) {
+      final listValue = value as List<dynamic>;
+      final result = List.empty(growable: true);
+
+      for (final listItem in listValue) {
+        result.add(await deserializeJsFunctions(listItem, viewId));
+      }
+
+      return result;
     }
 
-    if (value.runtimeType.toString() == '_InternalLinkedHashMap<String, dynamic>') {
+    if (value is Map) {
       final map = value as Map<String, dynamic>;
       final result = <String, dynamic>{};
       final keys = map.keys;
 
       // ignore: cascade_invocations, avoid_function_literals_in_foreach_calls
-      keys.forEach((key) {
-        result[key] = deserializeJsFunctions(map[key], viewId);
-      });
+      for (final key in keys) {
+        result[key] = await deserializeJsFunctions(map[key], viewId);
+      }
+
       return result;
     }
 

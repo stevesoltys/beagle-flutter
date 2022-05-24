@@ -54,7 +54,7 @@ class BeagleJSEngine {
   void callJsFunction(String functionId, [Map<String, dynamic>? argsMap]) =>
       _jsHelpers.callJsFunction(functionId, argsMap);
 
-  void addJsCallback(String name, dynamic Function(dynamic) listener) => _jsRuntime.onMessage(name, listener);
+  void addJsCallback(String name, Future<dynamic> Function(dynamic) listener) => _jsRuntime.onMessage(name, listener);
 
   void onHttpRequest(HttpListener listener) => _httpHandler.setListener(listener);
 
@@ -65,9 +65,6 @@ class BeagleJSEngine {
 
   RemoveListener onViewUpdate(String viewId, ViewChangeListener listener) =>
       _handleRemovableListener<ViewChangeListener>(viewId, _viewUpdateHandler.listenersMap, listener);
-
-  // void evaluateOnJSRuntime(String promiseId, String? result) => _jsRuntime.evaluate(
-  //     "${_jsHelpers.globalBeagle}.promise.resolve('$promiseId'${result != null ? ", ${jsonEncode(result)}" : ""})");
 
   void respondHttpRequest(String id, Response? response) =>
       _jsRuntime.evaluateAsync('${_jsHelpers.globalBeagle}.httpClient.respond($id, ${response?.toJson()})');
@@ -83,13 +80,6 @@ class BeagleJSEngine {
     _viewUpdateHandler.removeViewListener(viewId);
   }
 
-  /// Handles a javascript promise.
-  /// It throws [BeagleJSEngineException] if [BeagleJSEngine] isn't started.
-  // Future<JsEvalResult> promiseToFuture(JsEvalResult? result) {
-  //   _checkEngineIsStarted();
-  //   return _jsRuntime.handlePromise(result ?? JsEvalResult("null", null));
-  // }
-
   /// Runs javascript [code].
   /// It throws [BeagleJSEngineException] if [BeagleJSEngine] isn't started.
   Future<JsEvalResult?> evaluateJsCode(String code) async {
@@ -103,7 +93,6 @@ class BeagleJSEngine {
   Future<void> start() async {
     if (!_isEngineStarted()) {
       _engineState = BeagleJSEngineState.STARTED;
-      // _jsRuntime.enableHandlePromises();
 
       _setupMessages();
 

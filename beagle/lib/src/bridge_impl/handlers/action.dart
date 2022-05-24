@@ -41,11 +41,11 @@ class BeagleJSEngineActionHandler implements BeagleJSEngineBaseHandlerWithListen
   void removeViewListener(String viewId) => listenersMap.remove(viewId);
 
   @override
-  void notify(dynamic message) {
+  Future<void> notify(dynamic message) async {
     /* actionMessage must be a map with of the type:
     { action: BeagleAction (map), viewId: string, element: BeagleUIElement (map) } */
     final viewId = message['viewId'];
-    final action = BeagleAction(_jsHelpers.deserializeJsFunctions(message['action']));
+    final action = BeagleAction(await _jsHelpers.deserializeJsFunctions(message['action']));
     final view = BeagleViewJS.views[viewId]!;
     final element = BeagleUIElement(message['element'] ?? {});
 

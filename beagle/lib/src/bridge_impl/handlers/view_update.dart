@@ -36,9 +36,9 @@ class BeagleJSEngineViewUpdateHandler implements BeagleJSEngineBaseHandlerWithLi
   void removeViewListener(String viewId) => listenersMap.remove(viewId);
 
   @override
-  void notify(dynamic message) {
+  Future<void> notify(dynamic message) async {
     final viewId = message['id'];
-    final deserialized = _jsHelpers.deserializeJsFunctions(message['tree'], viewId);
+    final deserialized = await _jsHelpers.deserializeJsFunctions(message['tree'], viewId);
     final uiElement = BeagleUIElement(deserialized);
 
     if (lastUpdates[viewId] == null || lastUpdates[viewId]?.properties != uiElement.properties) {

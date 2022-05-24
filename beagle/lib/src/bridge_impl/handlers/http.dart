@@ -29,7 +29,7 @@ class BeagleJSEngineHttpHandler implements BeagleJSEngineBaseHandler {
   String get channelName => 'httpClient.request';
 
   @override
-  void notify(dynamic requestMessage) {
+  Future<void> notify(dynamic requestMessage) async {
     if (_listener == null) {
       return;
     }
