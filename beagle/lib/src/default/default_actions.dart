@@ -49,8 +49,8 @@ final Map<String, ActionHandler> defaultActions = {
   'beagle:openNativeRoute': ({required action, required element, required view, required context}) {
     final rawData = action.getAttributeValue('data');
     final data = rawData == null
-      ? <String, String>{}
-      : (rawData as Map<String, dynamic>).map((key, value) => MapEntry(key, value.toString()));
+        ? <String, String>{}
+        : (rawData as Map<String, dynamic>).map((key, value) => MapEntry(key, value.toString()));
     BeagleOpenNativeRoute().navigate(context, action.getAttributeValue('route'), data);
   },
   'beagle:openExternalURL': ({required action, required element, required view, required context}) {
@@ -61,22 +61,23 @@ final Map<String, ActionHandler> defaultActions = {
     view.getNavigator().pushView(_getRoute(action), context);
   },
   'beagle:popView': ({required action, required element, required view, required context}) {
-    view.getNavigator().popView(NavigationContext.fromJson(action.getAttributeValue("navigationContext")));
+    view.getNavigator().popView(NavigationContext.fromJson(action.getAttributeValue("navigationContext") ?? "{}"));
   },
   'beagle:popToView': ({required action, required element, required view, required context}) {
     view.getNavigator().popToView(
-        action.getAttributeValue("route"), NavigationContext.fromJson(action.getAttributeValue("navigationContext")));
+        action.getAttributeValue("route"),
+        NavigationContext.fromJson(action.getAttributeValue("navigationContext") ?? "{}"));
   },
   'beagle:pushStack': ({required action, required element, required view, required context}) {
-    view.getNavigator().pushStack(_getRoute(action), action.getAttributeValue("controllerId"));
+    view.getNavigator().pushStack(_getRoute(action), action.getAttributeValue("controllerId") ?? "");
   },
   'beagle:popStack': ({required action, required element, required view, required context}) {
-    view.getNavigator().popStack(NavigationContext.fromJson(action.getAttributeValue("navigationContext")));
+    view.getNavigator().popStack(NavigationContext.fromJson(action.getAttributeValue("navigationContext") ?? "{}"));
   },
   'beagle:resetStack': ({required action, required element, required view, required context}) {
-    view.getNavigator().resetStack(_getRoute(action), action.getAttributeValue("controllerId"));
+    view.getNavigator().resetStack(_getRoute(action), action.getAttributeValue("controllerId") ?? "");
   },
   'beagle:resetApplication': ({required action, required element, required view, required context}) {
-    view.getNavigator().resetApplication(_getRoute(action), action.getAttributeValue("controllerId"));
+    view.getNavigator().resetApplication(_getRoute(action), action.getAttributeValue("controllerId") ?? "");
   },
 };
