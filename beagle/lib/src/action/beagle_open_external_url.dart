@@ -17,11 +17,16 @@
 import 'package:beagle/beagle.dart';
 import 'package:flutter/widgets.dart';
 import 'package:url_launcher/url_launcher.dart' as launcher;
+import 'package:url_launcher/url_launcher_string.dart';
 
 class BeagleOpenExternalUrl {
-  static Future<void> launchURL(BuildContext buildContext, String url) async {
-    if (await launcher.canLaunch(url)) {
-      await launcher.launch(url);
+  static Future<void> launchURL(BuildContext buildContext, String url, bool external) async {
+    final uri = Uri.parse(url);
+
+    if (await launcher.canLaunchUrl(uri)) {
+      final launchMode = external ? LaunchMode.externalApplication : LaunchMode.platformDefault;
+
+      await launcher.launchUrl(uri, mode: launchMode);
     } else {
       final logger = findBeagleService(buildContext).logger;
       logger.error('Could not launch $url');
