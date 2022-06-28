@@ -15,9 +15,14 @@
  */
 
 import 'package:beagle/beagle.dart';
-import 'package:beagle/src/bridge_impl/handlers/action.dart';
 
 typedef ViewChangeListener = void Function(BeagleUIElement tree);
+
+typedef ActionListener = void Function({
+  required BeagleAction action,
+  required BeagleView view,
+  required BeagleUIElement element,
+});
 
 abstract class BeagleView {
   /// Subscribes [listener] to every change to the beagle tree. This method returns a function that,
@@ -31,7 +36,19 @@ abstract class BeagleView {
   Renderer getRenderer();
 
   /// Gets a copy of the currently rendered tree.
-  Future<BeagleUIElement?> getTree();
+  BeagleUIElement? getTree();
+
+  void setTree(BeagleUIElement tree);
+
+  void notifyChange(BeagleUIElement? tree);
+
+  void notifyAction(BeagleAction action, BeagleUIElement element);
+
+  void doFullRender();
+
+  GlobalContext getGlobalContext();
+
+  BeagleService getBeagleService();
 
   /// Gets the navigator that spawned this Beagle View, if any.
   BeagleNavigator getNavigator();

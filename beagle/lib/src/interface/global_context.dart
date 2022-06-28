@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import 'package:beagle/beagle.dart';
 import 'package:beagle/src/interface/contexts/base.dart';
 
 /// A Global Context is a class that can assume a value of any variable type. This is similar to a map that defines a subset
@@ -33,7 +34,7 @@ abstract class GlobalContext implements BaseContext {
   /// The type returned by this function is always one of the following: Map, Array, num, bool or
   /// String.
   @override
-  Future<T> get<T>([String path]);
+  T get<T>([String path]);
 
   /// Sets a [value] in the global context according to the [path] passed as parameter. The [path]
   /// can be ommited, in this case, the [value] is set to the entire global context.
@@ -43,7 +44,7 @@ abstract class GlobalContext implements BaseContext {
   /// All values in the GlobalContext must be encodable, i.e. Map, Array, number, bool or String.
   /// If the [value] is not encodable, an exception is thrown.
   @override
-  Future<void> set<T>(T value, [String path]);
+  void set<T>(T value, [String path]);
 
   /// Removes a value from the global context according to the [path] passed as parameter.
   ///
@@ -52,5 +53,9 @@ abstract class GlobalContext implements BaseContext {
   /// - If the provided [path] refers to an element of a list, the element is set to null.
   /// - If [path] is ommited, the entire global context is set to null.
   @override
-  Future<void> clear([String path]);
+  void clear([String path]);
+
+  List<BeagleDataContext> getAllAsDataContext();
+
+  Map<String, dynamic> getContext();
 }

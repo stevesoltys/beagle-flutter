@@ -17,14 +17,12 @@
 import 'dart:io';
 
 import 'package:beagle/beagle.dart';
+import 'package:beagle/src/impl/beagle_view_impl.dart';
+import 'package:beagle/src/impl/global_context_impl.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'bridge_impl/beagle_js.dart';
-import 'bridge_impl/beagle_view_js.dart';
 
 import 'package:beagle/src/default/default_actions.dart';
-
-import 'bridge_impl/global_context_js.dart';
 
 ///TODO: NEEDS ADD DOCUMENTATION
 typedef ActionHandler = void Function({
@@ -124,8 +122,8 @@ class BeagleService {
     this.imageDownloader = imageDownloader ?? DefaultBeagleImageDownloader(httpClient: httpClient);
     this.viewClient = viewClient ?? DefaultViewClient(httpClient: httpClient, logger: logger, urlBuilder: this.urlBuilder);
     this.defaultNavigationController = defaultNavigationController ?? DefaultNavigationController(logger);
-    js = BeagleJS(this);
-    globalContext = GlobalContextJS(js.engine);
+    // js = BeagleJS(this);
+    globalContext = GlobalContextImpl();
     this.hotReloadingUrl = hotReloadingUrl ?? 'ws://${(Platform.isAndroid ? '10.0.2.2' : 'localhost')}:3001';
   }
 
@@ -137,7 +135,8 @@ class BeagleService {
   final AnalyticsProvider? analyticsProvider;
   final HttpClient httpClient;
   late final ViewClient viewClient;
-  late final BeagleJS js;
+
+  // late final BeagleJS js;
 
   // other properties
   final String baseUrl;
@@ -160,9 +159,7 @@ class BeagleService {
 
   // factory methods
   Future<BeagleViewWidget> createView(BeagleNavigator navigator, BeagleWidget widget) async {
-    final viewId = await js.engine.createBeagleView();
-
-    final view = BeagleViewJS(viewId, js.engine, navigator);
+    final view = BeagleViewImpl(navigator, this);
     widget.view = view;
     return BeagleViewWidget(view, widget);
   }

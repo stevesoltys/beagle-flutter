@@ -15,8 +15,11 @@
  */
 
 import 'package:beagle/beagle.dart';
+import 'package:beagle/src/impl/beagle_action.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:beagle/src/accessibility/accessibility_helper.dart';
+
+import 'impl/beagle_expression.dart';
 
 abstract class ComponentBuilder extends StatelessWidget {
   Widget _applyStyles(Widget widget, BeagleNodeData data) {
@@ -41,7 +44,11 @@ abstract class ComponentBuilder extends StatelessWidget {
       throw ErrorDescription('Cannot find data for component with id "${beagleNode.id}". This is probably a problem within the Beagle library itself. Please contact support.');
     }
 
-    Widget widget = buildForBeagle(data.element, data.children, data.view);
+    final tree = data.element.clone();
+    BeagleActions.initializeActions(tree, data.view);
+    BeagleExpressions.initializeExpressions(tree, data.view);
+
+    Widget widget = buildForBeagle(tree, data.children, data.view);
     if (beagleService.enableStyles) {
       widget = _applyStyles(widget, data);
     }

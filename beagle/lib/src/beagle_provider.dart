@@ -34,7 +34,7 @@ class BeagleProviderState extends State<BeagleProvider> {
   bool _isReady = false;
 
   Future<void> _start() async {
-    await beagle.js.start();
+    // await beagle.js.start();
     setState(() {
       _isReady = true;
     });
