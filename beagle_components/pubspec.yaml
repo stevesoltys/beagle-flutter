@@ -24,10 +24,9 @@ environment:
 
 dependencies:
   beagle:
-    path: ../beagle
-#    git:
-#      url: https://github.com/stevesoltys/beagle-flutter.git
-#      path: beagle
+    git:
+      url: https://github.com/stevesoltys/beagle-flutter.git
+      path: beagle
   flutter:
     sdk: flutter
   webview_flutter: ^2.0.10
