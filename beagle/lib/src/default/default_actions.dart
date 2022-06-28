@@ -19,9 +19,7 @@ import 'package:beagle/beagle.dart';
 BeagleRoute _getRoute(BeagleAction action) {
   final routeJson = action.getAttributeValue("route");
   final navigationContextJson = action.getAttributeValue("navigationContext");
-  return RemoteView.isRemoteView(routeJson)
-      ? RemoteView.fromJson(routeJson, navigationContextJson)
-      : LocalView.fromJson(routeJson, navigationContextJson);
+  return RemoteView.isRemoteView(routeJson) ? RemoteView.fromJson(routeJson, navigationContextJson) : LocalView.fromJson(routeJson, navigationContextJson);
 }
 
 final Map<String, ActionHandler> defaultActions = {
@@ -48,13 +46,11 @@ final Map<String, ActionHandler> defaultActions = {
   // Native navigation
   'beagle:openNativeRoute': ({required action, required element, required view, required context}) {
     final rawData = action.getAttributeValue('data');
-    final data = rawData == null
-        ? <String, String>{}
-        : (rawData as Map<String, dynamic>).map((key, value) => MapEntry(key, value.toString()));
+    final data = rawData == null ? <String, String>{} : (rawData as Map<String, dynamic>).map((key, value) => MapEntry(key, value.toString()));
     BeagleOpenNativeRoute().navigate(context, action.getAttributeValue('route'), data);
   },
   'beagle:openExternalURL': ({required action, required element, required view, required context}) {
-    BeagleOpenExternalUrl.launchURL(context, action.getAttributeValue('url'));
+    BeagleOpenExternalUrl.launchURL(context, action.getAttributeValue('url'), action.getAttributeValue('external') ?? true);
   },
   // Beagle Navigation
   'beagle:pushView': ({required action, required element, required view, required context}) {
@@ -64,9 +60,7 @@ final Map<String, ActionHandler> defaultActions = {
     view.getNavigator().popView(NavigationContext.fromJson(action.getAttributeValue("navigationContext") ?? "{}"));
   },
   'beagle:popToView': ({required action, required element, required view, required context}) {
-    view.getNavigator().popToView(
-        action.getAttributeValue("route"),
-        NavigationContext.fromJson(action.getAttributeValue("navigationContext") ?? "{}"));
+    view.getNavigator().popToView(action.getAttributeValue("route"), NavigationContext.fromJson(action.getAttributeValue("navigationContext") ?? "{}"));
   },
   'beagle:pushStack': ({required action, required element, required view, required context}) {
     view.getNavigator().pushStack(_getRoute(action), action.getAttributeValue("controllerId") ?? "");
