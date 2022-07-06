@@ -21,7 +21,12 @@ import 'package:beagle/src/model/json_encodable.dart';
 import 'package:flutter/widgets.dart';
 
 class BeagleUIElement {
-  BeagleUIElement(this.properties);
+  BeagleUIElement(this.properties) {
+    if (properties['child'] != null) {
+      properties['children'] = [properties['child']];
+      properties.remove('child');
+    }
+  }
 
   Map<String, dynamic> properties;
 
@@ -41,15 +46,11 @@ class BeagleUIElement {
     return properties['_beagleComponent_'].toString();
   }
 
-  BeagleDataContext? getContext() {
+  Map<String, dynamic>? getContext() {
     if (!properties.containsKey('context')) {
       return null;
     }
-    final Map<String, dynamic> contextMap = properties['context'];
-    return BeagleDataContext(
-      id: contextMap['id'],
-      value: contextMap['value'],
-    );
+    return properties['context'];
   }
 
   bool hasChildren() {
@@ -67,6 +68,34 @@ class BeagleUIElement {
     return list.map((child) => BeagleUIElement(child)).toList();
   }
 
+  void setChildren(List<Map<String, dynamic>> children) {
+    properties['children'] = children;
+  }
+
+  void replaceChild(int index, BeagleUIElement child) {
+    if (hasChildren()) {
+      properties['children'][index] = child.properties;
+    } else {
+      throw Exception("Tried to replace child on Beagle UI element that has no children.");
+    }
+  }
+
+  void insertChild(int index, BeagleUIElement child) {
+    if (hasChildren()) {
+      properties['children'].insert(index, child);
+    } else {
+      throw Exception("Tried to insert child on Beagle UI element that has no children.");
+    }
+  }
+
+  void appendChild(BeagleUIElement child) {
+    if (hasChildren()) {
+      properties['children'].add(child);
+    } else {
+      throw Exception("Tried to insert child on Beagle UI element that has no children.");
+    }
+  }
+
   dynamic getAttributeValue(String attributeName, [dynamic defaultValue]) {
     return properties.containsKey(attributeName) ? properties[attributeName] : defaultValue;
   }
@@ -77,6 +106,32 @@ class BeagleUIElement {
 
   BeagleAccessibility? getAccessibility() {
     return properties.containsKey('accessibility') ? BeagleAccessibility.fromMap(properties['accessibility']) : null;
+  }
+
+  BeagleUIElement clone() {
+    return BeagleUIElement(cloneFrom(properties));
+  }
+
+  dynamic cloneFrom(dynamic data) {
+    if (data is List<dynamic>) {
+      final List<dynamic> resultList = [];
+
+      for (final element in data) {
+        resultList.add(cloneFrom(element));
+      }
+
+      return resultList;
+    } else if (data is Map<String, dynamic>) {
+      final Map<String, dynamic> resultMap = {};
+
+      data.forEach((String key, dynamic childData) {
+        resultMap[key] = cloneFrom(childData);
+      });
+
+      return resultMap;
+    } else {
+      return data;
+    }
   }
 
   static bool isBeagleUIElement(Map<String, dynamic>? json) {

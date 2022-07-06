@@ -31,6 +31,7 @@ class BeagleWidgetState extends State<BeagleWidget> {
   Widget? _widgetState;
 
   late final BeagleService beagle;
+
   bool _hasInitialized = false;
 
   @override
@@ -47,7 +48,9 @@ class BeagleWidgetState extends State<BeagleWidget> {
   /* this builds the widget tree while also filling a map (componentToNodeData) that links each component (by id) to
   its NodeData.*/
   Widget _buildViewFromTree(BeagleUIElement tree, Map<String, BeagleNodeData> componentToNodeData) {
-    final componentChildren = tree.getChildren().map((child) => _buildViewFromTree(child, componentToNodeData)).toList();
+    final componentChildren = tree.getChildren()
+        .map((child) => _buildViewFromTree(child, componentToNodeData))
+        .toList();
     final builder = beagle.components[tree.getType().toLowerCase()];
     if (builder == null) {
       beagle.logger.error("Can't find builder for component ${tree.getType()}");
@@ -60,7 +63,8 @@ class BeagleWidgetState extends State<BeagleWidget> {
       componentToNodeData[tree.getId()] = BeagleNodeData(tree, componentChildren, widget.view!);
       return BeagleNode(id: tree.getId(), child: builder());
     } catch (error) {
-      beagle.logger.error("Could not build component ${tree.getType()} with id ${tree.getId()} due to the following error:");
+      beagle.logger.error(
+          "Could not build component ${tree.getType()} with id ${tree.getId()} due to the following error:");
       beagle.logger.error(error.toString());
       return BeagleUndefinedWidget(environment: beagle.environment);
     }
@@ -82,33 +86,22 @@ class BeagleWidgetState extends State<BeagleWidget> {
   }
 
   void initBeagleState() {
-    () async {
-      await Future.doWhile(() async {
-        await Future.delayed(Duration(milliseconds: 10), () {});
-        return widget.view == null;
-      });
-
-      // setup actions
-      widget.view!.onAction(({required action, required element, required view}) {
-        final handler = beagle.actions[action.getType().toLowerCase()];
-        if (handler == null) {
-          return beagle.logger.error("Couldn't find action with name ${action.getType()}. It will be ignored.");
-        }
-        handler(action: action, view: view, element: element, context: context);
-      });
-
-      // update the UI everytime the beagle view changes
-      widget.view!.onChange((tree) {
-        _updateCurrentUI(tree);
-      });
-
-      // first render:
-      final tree = await widget.view!.getTree();
-
-      if (tree != null) {
-        widget.view!.getRenderer().doFullRender(tree);
+    // setup actions
+    widget.view!.onAction(({required action, required element, required view}) {
+      final handler = beagle.actions[action.getType().toLowerCase()];
+      if (handler == null) {
+        return beagle.logger.error("Couldn't find action with name ${action.getType()}. It will be ignored.");
       }
-    }();
+      handler(action: action, view: view, element: element, context: context);
+    });
+
+    // update the UI everytime the beagle view changes
+    widget.view!.onChange((tree) {
+      _updateCurrentUI(tree);
+    });
+
+    // first render:
+    widget.view!.doFullRender();
   }
 
   Widget buildBeagleWidget(BuildContext context) {

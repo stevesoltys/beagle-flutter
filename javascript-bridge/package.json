@@ -9,7 +9,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "@zup-it/beagle-web": "2.0.0",
+    "@zup-it/beagle-web": "file:/Users/steve/Code/beagle-web-core/dist",
+    "beagle-web": "file:../../beagle-web-core/dist",
     "lodash": "^4.17.20"
   },
   "devDependencies": {

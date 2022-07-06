@@ -63,6 +63,7 @@ class _BeagleLazyComponent extends State<BeagleLazyComponent>
   Future<void> _fetchLazyView() async {
     try {
       final component = await beagle.viewClient.fetch(RemoteView(widget.path));
+
       widget.view.getRenderer().doFullRender(component, widget.beagleId, TreeUpdateMode.replace);
     } catch (err) {
       beagle.logger.error('BeagleLazyComponent: error: $err');

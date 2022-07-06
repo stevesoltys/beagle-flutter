@@ -67,16 +67,16 @@ Future<void> _requestPrefetch(String url) async {
 }
 
 void _processPrefetches(BeagleUIElement view) async {
-    final actions = findActionsInView(view);
-    for (var action in actions) {
-      final isNavigationAction = _defaultNavigateActions.contains(action.values.first);
-      if (!isNavigationAction) continue;
-      final url = action['route']?['url'];
-      final hasValidUrl = validateUrl(url, logger);
-      final shouldPrefetch = action['route']?['shouldPrefetch'] == true;
-      if (hasValidUrl && shouldPrefetch) {
-        _requestPrefetch(url);
-      }
-    }
+    // final actions = findActionsInView(view);
+    // for (var action in actions) {
+    //   final isNavigationAction = _defaultNavigateActions.contains(action.values.first);
+    //   if (!isNavigationAction) continue;
+    //   final url = action['route']?['url'];
+    //   final hasValidUrl = validateUrl(url, logger);
+    //   final shouldPrefetch = action['route']?['shouldPrefetch'] == true;
+    //   if (hasValidUrl && shouldPrefetch) {
+    //     _requestPrefetch(url);
+    //   }
+    // }
   }
 }

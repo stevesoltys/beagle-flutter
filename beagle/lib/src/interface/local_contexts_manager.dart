@@ -17,6 +17,9 @@
 import 'package:beagle/beagle.dart';
 
 abstract class LocalContextsManager {
+
+  Map<String, dynamic> getAllContext();
+
   Future<LocalContext?> getContext(String id);
 
   Future<void> setContext(String id, dynamic value, [String? path]);
