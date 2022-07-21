@@ -44,8 +44,13 @@ class RootNavigator extends StatefulWidget {
 
   final List<StackNavigator> initialPages;
 
+  late RootNavigatorState currentState;
+
   @override
-  RootNavigatorState createState() => RootNavigatorState();
+  RootNavigatorState createState() {
+    currentState = RootNavigatorState();
+    return currentState;
+  }
 }
 
 class RootNavigatorState extends State<RootNavigator> with BeagleConsumer implements BeagleNavigator {
@@ -177,7 +182,7 @@ class RootNavigatorState extends State<RootNavigator> with BeagleConsumer implem
     _history = [];
     _thisNavigatorKey.currentState!.pushAndRemoveUntil(
       _createNewRoute(route, _getControllerById(controllerId)),
-      (route) => false,
+          (route) => false,
     );
   }
 
