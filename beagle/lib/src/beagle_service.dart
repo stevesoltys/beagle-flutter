@@ -124,7 +124,7 @@ class BeagleService {
     this.defaultNavigationController = defaultNavigationController ?? DefaultNavigationController(logger);
     // js = BeagleJS(this);
     globalContext = GlobalContextImpl();
-    this.hotReloadingUrl = hotReloadingUrl ?? 'ws://${(Platform.isAndroid ? '10.0.2.2' : 'localhost')}:3001';
+    this.hotReloadingUrl = hotReloadingUrl ?? 'ws://${(defaultTargetPlatform == TargetPlatform.android ? '10.0.2.2' : 'localhost')}:3001';
   }
 
   // services
