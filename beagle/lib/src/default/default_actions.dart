@@ -57,16 +57,16 @@ final Map<String, ActionHandler> defaultActions = {
     view.getNavigator().pushView(_getRoute(action), context);
   },
   'beagle:popView': ({required action, required element, required view, required context}) {
-    view.getNavigator().popView(NavigationContext.fromJson(action.getAttributeValue("navigationContext") ?? "{}"));
+    view.getNavigator().popView(NavigationContext.fromJson(action.getAttributeValue("navigationContext") ?? {}));
   },
   'beagle:popToView': ({required action, required element, required view, required context}) {
-    view.getNavigator().popToView(action.getAttributeValue("route"), NavigationContext.fromJson(action.getAttributeValue("navigationContext") ?? "{}"));
+    view.getNavigator().popToView(action.getAttributeValue("route"), NavigationContext.fromJson(action.getAttributeValue("navigationContext") ?? {}));
   },
   'beagle:pushStack': ({required action, required element, required view, required context}) {
     view.getNavigator().pushStack(_getRoute(action), action.getAttributeValue("controllerId") ?? "");
   },
   'beagle:popStack': ({required action, required element, required view, required context}) {
-    view.getNavigator().popStack(NavigationContext.fromJson(action.getAttributeValue("navigationContext") ?? "{}"));
+    view.getNavigator().popStack(NavigationContext.fromJson(action.getAttributeValue("navigationContext") ?? {}));
   },
   'beagle:resetStack': ({required action, required element, required view, required context}) {
     view.getNavigator().resetStack(_getRoute(action), action.getAttributeValue("controllerId") ?? "");
