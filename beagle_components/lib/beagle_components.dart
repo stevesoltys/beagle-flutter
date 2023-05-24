@@ -30,7 +30,6 @@ export 'package:beagle_components/src/beagle_tab_bar.dart';
 export 'package:beagle_components/src/beagle_text.dart';
 export 'package:beagle_components/src/beagle_text_input.dart';
 export 'package:beagle_components/src/beagle_touchable.dart';
-export 'package:beagle_components/src/beagle_webview.dart';
 export 'package:beagle_components/src/text_input_type.dart';
 export 'package:beagle_components/src/beagle_pull_to_refresh.dart';
 export 'package:beagle_components/src/after_layout.dart';

@@ -31,7 +31,6 @@ final Map<String, ComponentBuilder Function()> defaultComponents = {
   'beagle:image': () => _ImageBuilder(),
   'beagle:pageIndicator': () => _PageIndicatorBuilder(),
   'beagle:touchable': () => _TouchableBuilder(),
-  'beagle:webView': () => _WebViewBuilder(),
   'beagle:screenComponent': () => _ScreenBuilder(),
   'beagle:pullToRefresh': () => _PullToRefreshBuilder(),
   'beagle:scrollView': () => _ScrollViewBuilder(),
@@ -223,16 +222,6 @@ class _TouchableBuilder extends ComponentBuilder {
   Widget buildForBeagle(element, children, __) => BeagleTouchable(
     onPress: element.getAttributeValue('onPress'),
     child: children.isNotEmpty ? children[0] : null,
-  );
-}
-
-class _WebViewBuilder extends ComponentBuilder {
-  @override
-  StyleConfig getStyleConfig() => StyleConfig.disabled();
-
-  @override
-  Widget buildForBeagle(element, children, __) => BeagleWebView(
-    url: element.getAttributeValue('url'),
   );
 }
 

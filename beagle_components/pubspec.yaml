@@ -29,7 +29,6 @@ dependencies:
       path: beagle
   flutter:
     sdk: flutter
-  webview_flutter: ^2.0.10
   collection: ^1.15.0
 
 dev_dependencies:
