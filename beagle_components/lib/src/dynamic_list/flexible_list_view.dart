@@ -85,7 +85,9 @@ class _FlexibleListView extends State<FlexibleListView> with AfterLayoutMixin {
     if (widget.useScrollbar) {
       list = Scrollbar(
         child: list,
-        isAlwaysShown: true,
+        // removed from sdk, see https://api.flutter.dev/flutter/material/Scrollbar/isAlwaysShown.html
+        // isAlwaysShown: true,
+        thumbVisibility: true,
         controller: widget.controller,
       );
     }
