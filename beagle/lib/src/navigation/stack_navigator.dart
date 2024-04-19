@@ -192,7 +192,7 @@ class StackNavigator extends StatelessWidget {
     /* We only call the default pop from the navigator because the popView operation can also be triggered by the back
     button of the navigation bar and the systems's back function. The full popView behavior can be found in the
     _historyObserver. */
-    _thisNavigatorKey.currentState!.pop();
+    _thisNavigatorKey.currentState!.maybePop();
 
     if (_history.isNotEmpty) {
       /* It has already popped at this time */
