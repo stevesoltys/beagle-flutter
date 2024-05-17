@@ -19,6 +19,7 @@ import 'dart:async';
 import 'package:beagle/beagle.dart';
 import 'package:beagle/src/navigation/stack_navigator_history.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'history_observer.dart';
 
 /// This Navigator is internally used by the RootNavigator. It should never be used outside a RootNavigator.
@@ -172,7 +173,8 @@ class StackNavigator extends StatelessWidget {
     _poppedNavigationContext = navigationContext;
 
     if (!_history.map((h) => h.routeName).contains(routeIdentifier)) {
-      return beagle.logger.error("Cannot pop to \"$routeIdentifier\" because it doesn't exist in the navigation history.");
+      return beagle.logger
+          .error("Cannot pop to \"$routeIdentifier\" because it doesn't exist in the navigation history.");
     }
     _thisNavigatorKey.currentState!.popUntil((route) => route.settings.name == routeIdentifier);
     while (_history.last.routeName != routeIdentifier) {
@@ -192,7 +194,14 @@ class StackNavigator extends StatelessWidget {
     /* We only call the default pop from the navigator because the popView operation can also be triggered by the back
     button of the navigation bar and the systems's back function. The full popView behavior can be found in the
     _historyObserver. */
-    _thisNavigatorKey.currentState!.maybePop();
+    final result = _thisNavigatorKey.currentState!.maybePop();
+
+    result.then((value) {
+      // If we can't pop, we should close the app.
+      if (!value) {
+        SystemNavigator.pop();
+      }
+    });
 
     if (_history.isNotEmpty) {
       /* It has already popped at this time */
